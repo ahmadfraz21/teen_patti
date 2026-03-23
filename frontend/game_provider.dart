@@ -16,16 +16,19 @@ class GameProvider extends ChangeNotifier {
 
   GameProvider(this.serverUrl);
 
+  // ── Getters ────────────────────────────────────────────────────────────
   ConnectionState get connectionState => _connectionState;
   String get roomCode => _roomCode;
   List<String> get logs => List.unmodifiable(_logs);
   GameEngine? get engine => _engine;
   GameResult? get lastResult => _lastResult;
+
   bool get isConnected => _connectionState == ConnectionState.connected;
   GamePhase get phase => _engine?.phase ?? GamePhase.idle;
   int get pot => _engine?.pot ?? 0;
   List<Player> get players => _engine?.players ?? [];
 
+  // ── Local single-device game (for testing) ─────────────────────────────
   void startLocalGame(List<String> playerNames, {int bootAmount = 10}) {
     final players = playerNames.map((name) => Player(
       id: name.toLowerCase().replaceAll(' ', '_'),
@@ -33,7 +36,10 @@ class GameProvider extends ChangeNotifier {
       chips: 1000,
     )).toList();
 
-    _engine = GameEngine(players: players, bootAmount: bootAmount);
+    _engine = GameEngine(
+      players: players,
+      bootAmount: bootAmount,
+    );
     _engine!.onLog = (msg) {
       _logs.add(msg);
       if (_logs.length > 50) _logs.removeAt(0);
@@ -45,6 +51,7 @@ class GameProvider extends ChangeNotifier {
       _lastResult = result;
       notifyListeners();
     };
+
     _engine!.startRound();
     notifyListeners();
   }
@@ -59,9 +66,13 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ── Multiplayer via Socket.io (stub – wire up in Phase 3) ─────────────
   Future<void> connectToServer() async {
     _connectionState = ConnectionState.connecting;
     notifyListeners();
+    // TODO: implement socket_io_client connection
+    // final socket = io(serverUrl, OptionBuilder().setTransports(['websocket']).build());
+    // socket.onConnect((_) { ... });
     await Future.delayed(const Duration(seconds: 1));
     _connectionState = ConnectionState.connected;
     notifyListeners();

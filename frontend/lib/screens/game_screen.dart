@@ -126,7 +126,7 @@ class _PlayerRow extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 6),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isCurrentTurn ? Colors.white15 : Colors.black26,
+        color: isCurrentTurn ? Colors.white.withOpacity(0.15) : Colors.black26,
         borderRadius: BorderRadius.circular(14),
         border: isCurrentTurn
             ? Border.all(color: const Color(0xFFFFD700), width: 1.5)
